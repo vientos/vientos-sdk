@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+
+  mongo:
+    image: mongo:3.4
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db:/data/db
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

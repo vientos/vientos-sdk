@@ -1,0 +1,16 @@
+{
+  "name": "vientos-sdk",
+  "version": "0.0.1",
+  "description": "dev tools for vientos stack",
+  "main": "index.js",
+  "scripts": {
+    "seed": "gulp seed",
+    "purge": "gulp db:drop"
+  },
+  "author": "",
+  "license": "Unlicense",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "vientos-hapipalapi": "https://github.com/ehecame/vientos-hapipalapi.git"
+  }
+}
