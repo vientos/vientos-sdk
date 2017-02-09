@@ -28,7 +28,7 @@ git submodule init && git submodule update
 will checkout service and PWA
 
 ```shell
-cp env.examp env
+cp env.example env
 # edit env if needed
 source ./env
 ```
@@ -37,26 +37,53 @@ source ./env
 ```shell
 cd vientos-service
 npm install
+cd .. # back to vientos-sdk
 ```
 
 to start dev server for vientos-service
 ```shell
 gulp service
-
 ```
+
+#### git workflow
+
+1. fork https://github.com/ehecame/vientos-service
+2. checkout original master and set your fork as remote
+```shell
+cd vientos-service
+git pull origin
+git checkout master
+git remote add myfork git@github.com:{MYUSERNAME}/vientos-sdk.git
+```
+3. for each PR start from origin/master, make topic branch and push it to your fork
+```shell
+git checkout master
+git pull origin
+git checkout -b myfeature
+# edit files and git add
+git commit -m 'short description'
+git push myfork myfeature
+```
+
 ### vientos-nahual
 ```shell
 cd vientos-nahual
 npm install
 bower install
 cp config.example.json config.json
+# edit env if needed
 npm run bundle
+cd .. # back to vientos-sdk
 ```
 
 to start dev server for vientos-nahual
 ```shell
 gulp pwa
 ```
+
+#### git workflow
+same as for vientos-service
+
 
 ### full stack
 to start both dev servers
@@ -82,7 +109,7 @@ to drop database
 gulp db:drop
 ```
 
-to see counts of colections in database
+to see counts for collections in database
 ```shell
 gulp db:stats
 ```
