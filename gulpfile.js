@@ -1,6 +1,7 @@
 const gulp = require('gulp')
 const server = require('gulp-develop-server')
 const browserSync = require('browser-sync').create()
+const historyApiFallback = require('connect-history-api-fallback')
 const MongoClient = require('mongodb').MongoClient
 const MongoObjectId = require('mongodb').ObjectId
 const fixtures = require('vientos-fixtures')
@@ -22,6 +23,7 @@ gulp.task('service', ['service:start', 'service:restart'])
 gulp.task('pwa', () => {
   browserSync.init({
     server: './vientos-nahual',
+    middleware: [ historyApiFallback() ],
     port: 8080,
     open: false,
     notify: false
