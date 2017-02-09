@@ -1,0 +1,6 @@
+[submodule "vientos-service"]
+	path = vientos-service
+	url = https://github.com/ehecame/vientos-service.git
+[submodule "vientos-nahual"]
+	path = vientos-nahual
+	url = https://github.com/ehecame/vientos-nahual.git

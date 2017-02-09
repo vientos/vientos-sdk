@@ -1,44 +1,74 @@
-var gulp = require('gulp')
+const gulp = require('gulp')
+const server = require('gulp-develop-server')
+const browserSync = require('browser-sync').create()
+const MongoClient = require('mongodb').MongoClient
+const MongoObjectId = require('mongodb').ObjectId
+const fixtures = require('vientos-fixtures')
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/vientos-dev'
 
-const MONGO_URL = 'mongodb://localhost:27017'
-gulp.task('seed:user', (done) => {
-  const UserManager = require('vientos/src/managers/user')
-  const Bcrypt = require('bcrypt-nodejs')
-  const MongoClient = require('mongodb').MongoClient
-  let password = 'secret'
-  let user = {
-    email: 'me@example.org',
-    password: Bcrypt.hashSync(password)
-  }
+// service
+gulp.task('service:start', () => {
+  server.listen({ path: './server.js' })
+})
+
+gulp.task('service:restart', () => {
+  gulp.watch([ 'vientos-service/src/**/*' ], server.restart)
+})
+
+gulp.task('service', ['service:start', 'service:restart'])
+
+// PWA
+
+gulp.task('pwa', () => {
+  browserSync.init({
+    server: './vientos-nahual',
+    port: 8080,
+    open: false,
+    notify: false
+  })
+  gulp.watch('vientos-nahual/app/**/*').on('change', browserSync.reload)
+})
+
+// stack
+gulp.task('stack', ['service', 'pwa'])
+
+// database
+
+function wrapObjectIds (array) {
+  return array.map(doc => {
+    doc._id = new MongoObjectId(doc._id)
+    if (doc.admins) {
+      doc.admins = doc.admins.map(id => new MongoObjectId(id))
+    }
+    return doc
+  })
+}
+
+gulp.task('import:people', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    UserManager.insert(db, user, (doc) => {
-      console.log('email:', user.email)
-      console.log('password:', password)
-      db.close()
-      return done()
-    })
+    db.collection('people').insert(wrapObjectIds(fixtures.people))
+      .then(() => {
+        console.log('people imported')
+        db.close()
+        return done()
+      })
   })
 })
 
-gulp.task('seed:projects', (done) => {
-  const ProjectManager = require('vientos/src/managers/project')
-  const MongoClient = require('mongodb').MongoClient
-  const projects = require('./data/projects.json')
+gulp.task('import:projects', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    Promise.all(projects.map(project => {
-      return ProjectManager.insert(db, project, (doc) => { return Promise.resolve(doc) })
-    })).then((all) => {
-      console.log('imported', all.length, 'projects')
-      db.close()
-      return done()
-    })
+    db.collection('projects').insert(wrapObjectIds(fixtures.projects))
+      .then(() => {
+        console.log('projects imported')
+        db.close()
+        return done()
+      })
   })
 })
 
 gulp.task('db:drop', (done) => {
-  const MongoClient = require('mongodb').MongoClient
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
     db.dropDatabase().then(() => {
@@ -50,11 +80,10 @@ gulp.task('db:drop', (done) => {
 })
 
 gulp.task('db:stats', (done) => {
-  const MongoClient = require('mongodb').MongoClient
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    db.collection('users').count()
-      .then(count => console.log('users:', count))
+    db.collection('people').count()
+      .then(count => console.log('people:', count))
       .then(() => db.collection('projects').count())
       .then(count => console.log('projects:', count))
       .then(() => {
@@ -64,4 +93,4 @@ gulp.task('db:stats', (done) => {
   })
 })
 
-gulp.task('seed', ['seed:user', 'seed:projects'])
+gulp.task('import', ['import:people', 'import:projects'])

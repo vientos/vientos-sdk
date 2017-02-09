@@ -10,7 +10,10 @@
   "author": "",
   "license": "Unlicense",
   "devDependencies": {
+    "browser-sync": "^2.18.7",
     "gulp": "^3.9.1",
-    "vientos-hapipalapi": "https://github.com/ehecame/vientos-hapipalapi.git"
+    "gulp-develop-server": "^0.5.2",
+    "mongodb": "^2.2.22",
+    "vientos-fixtures": "https://github.com/ehecame/vientos-fixtures.git"
   }
 }
