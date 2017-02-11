@@ -28,7 +28,7 @@ gulp.task('pwa', () => {
     open: false,
     notify: false
   })
-  gulp.watch('vientos-nahual/app/**/*').on('change', browserSync.reload)
+  gulp.watch(['vientos-nahual/app/**/*', 'vientos-nahual/bundle.js']).on('change', browserSync.reload)
 })
 
 // stack
