@@ -15,6 +15,6 @@
     "gulp": "^3.9.1",
     "gulp-develop-server": "^0.5.2",
     "mongodb": "^2.2.22",
-    "vientos-fixtures": "https://github.com/ehecame/vientos-fixtures.git"
+    "vientos-fixtures": "https://github.com/ehecame/vientos-fixtures.git#0.0.4"
   }
 }

@@ -70,6 +70,18 @@ gulp.task('import:projects', (done) => {
   })
 })
 
+gulp.task('import:intents', (done) => {
+  MongoClient.connect(MONGO_URL, (err, db) => {
+    if (err) throw err
+    db.collection('intents').insert(wrapObjectIds(fixtures.intents))
+      .then(() => {
+        console.log('intents imported')
+        db.close()
+        return done()
+      })
+  })
+})
+
 gulp.task('db:drop', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
@@ -95,4 +107,4 @@ gulp.task('db:stats', (done) => {
   })
 })
 
-gulp.task('import', ['import:people', 'import:projects'])
+gulp.task('import', ['import:people', 'import:projects', 'import:intents'])
