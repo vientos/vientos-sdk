@@ -3,7 +3,7 @@ const server = require('gulp-develop-server')
 const browserSync = require('browser-sync').create()
 const historyApiFallback = require('connect-history-api-fallback')
 const MongoClient = require('mongodb').MongoClient
-const MongoObjectId = require('mongodb').ObjectId
+const cuid = require('cuid')
 const fixtures = require('vientos-fixtures')
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/vientos-dev'
 
@@ -36,11 +36,17 @@ gulp.task('stack', ['service', 'pwa'])
 
 // database
 
-function wrapObjectIds (array) {
-  return array.map(doc => {
-    doc._id = new MongoObjectId(doc._id)
+function namespaceIds (collection) {
+  let prefix = process.env.OAUTH_CLIENT_DOMAIN + '/'
+  let path = collection + '/'
+  return fixtures[collection].map(doc => {
+    if (!doc._id) doc._id = cuid()
+    doc._id = prefix + path + doc._id
     if (doc.admins) {
-      doc.admins = doc.admins.map(id => new MongoObjectId(id))
+      doc.admins = doc.admins.map(id => prefix + 'people/' + id)
+    }
+    if (doc.projects) {
+      doc.projects = doc.projects.map(id => prefix + 'projects/' + id)
     }
     return doc
   })
@@ -49,7 +55,7 @@ function wrapObjectIds (array) {
 gulp.task('import:people', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    db.collection('people').insert(wrapObjectIds(fixtures.people))
+    db.collection('people').insert(namespaceIds('people'))
       .then(() => {
         console.log('people imported')
         db.close()
@@ -61,7 +67,7 @@ gulp.task('import:people', (done) => {
 gulp.task('import:projects', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    db.collection('projects').insert(wrapObjectIds(fixtures.projects))
+    db.collection('projects').insert(namespaceIds('projects'))
       .then(() => {
         console.log('projects imported')
         db.close()
@@ -73,7 +79,7 @@ gulp.task('import:projects', (done) => {
 gulp.task('import:intents', (done) => {
   MongoClient.connect(MONGO_URL, (err, db) => {
     if (err) throw err
-    db.collection('intents').insert(wrapObjectIds(fixtures.intents))
+    db.collection('intents').insert(namespaceIds('intents'))
       .then(() => {
         console.log('intents imported')
         db.close()
