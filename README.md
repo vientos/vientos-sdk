@@ -1,7 +1,7 @@
 # vientos-sdk
 Development environment for vientos stack, it includes as submodules:
 
-* https://github.com/ehecame/vientos-nahual
+* https://github.com/ehecame/vientos-pwa
 * https://github.com/ehecame/vientos-hapipalapi
 
 ## dependencies
@@ -65,9 +65,9 @@ git commit -m 'short description'
 git push myfork myfeature
 ```
 
-### vientos-nahual
+### vientos-pwa
 ```shell
-cd vientos-nahual
+cd vientos-pwa
 npm install
 bower install
 cp config.example.json config.json
@@ -76,7 +76,7 @@ npm run bundle
 cd .. # back to vientos-sdk
 ```
 
-to start dev server for vientos-nahual
+to start dev server for vientos-pwa
 ```shell
 gulp pwa
 ```

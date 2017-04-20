@@ -22,13 +22,13 @@ gulp.task('service', ['service:start', 'service:restart'])
 
 gulp.task('pwa', () => {
   browserSync.init({
-    server: './vientos-nahual',
+    server: './vientos-pwa',
     middleware: [ historyApiFallback() ],
     port: 8080,
     open: false,
     notify: false
   })
-  gulp.watch(['vientos-nahual/app/**/*', 'vientos-nahual/bundle.js']).on('change', browserSync.reload)
+  gulp.watch(['vientos-pwa/app/**/*', 'vientos-pwa/bundle.js']).on('change', browserSync.reload)
 })
 
 // stack
