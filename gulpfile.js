@@ -2,6 +2,9 @@ const gulp = require('gulp')
 const server = require('gulp-develop-server')
 const browserSync = require('browser-sync').create()
 const historyApiFallback = require('connect-history-api-fallback')
+const browserify = require('browserify')
+const babelify = require('babelify')
+const source = require('vinyl-source-stream')
 const cuid = require('cuid')
 const factory = require('factory-girl').factory
 const Chance = require('chance')
@@ -38,6 +41,16 @@ gulp.task('pwa', () => {
     notify: false
   })
   gulp.watch(['vientos-pwa/app/**/*', 'vientos-pwa/bundle.js']).on('change', browserSync.reload)
+  gulp.watch(['vientos-pwa/src/**/*']).on('change', () => {
+    console.log('auto-bundling ;)')
+    return browserify({
+      entries: ['vientos-pwa/src/main.js'],
+      debug: true
+    }).transform(babelify.configure({
+      presets: ['es2015'],
+      plugins: ['transform-object-rest-spread']
+    })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-pwa/'))
+  })
 })
 
 // stack

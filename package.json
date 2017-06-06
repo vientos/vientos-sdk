@@ -10,7 +10,11 @@
   "author": "",
   "license": "Unlicense",
   "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
     "browser-sync": "^2.18.7",
+    "browserify": "^14.4.0",
     "chance": "^1.0.8",
     "connect-history-api-fallback": "^1.3.0",
     "cuid": "^1.3.8",
@@ -21,6 +25,7 @@
     "mongodb": "^2.2.22",
     "mongoose": "^4.9.8",
     "vientos-data": "https://github.com/vientos/vientos-data.git#0.0.1",
-    "vientos-fixtures": "https://github.com/vientos/vientos-fixtures.git#0.0.5"
+    "vientos-fixtures": "https://github.com/vientos/vientos-fixtures.git#0.0.5",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
