@@ -41,7 +41,7 @@ gulp.task('pwa', () => {
     notify: false
   })
   gulp.watch(['vientos-pwa/app/**/*', 'vientos-pwa/bundle.js']).on('change', browserSync.reload)
-  gulp.watch(['vientos-pwa/src/**/*']).on('change', () => {
+  gulp.watch(['vientos-pwa/src/**/*', 'vientos-pwa/config.json']).on('change', () => {
     console.log('auto-bundling ;)')
     return browserify({
       entries: ['vientos-pwa/src/main.js'],
