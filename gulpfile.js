@@ -32,7 +32,7 @@ gulp.task('service', ['service:start', 'service:restart'])
 
 // PWA
 
-gulp.task('pwa', () => {
+gulp.task('pwa:browsersync', () => {
   browserSync.init({
     server: './vientos-pwa',
     middleware: [ historyApiFallback() ],
@@ -41,17 +41,26 @@ gulp.task('pwa', () => {
     notify: false
   })
   gulp.watch(['vientos-pwa/app/**/*', 'vientos-pwa/bundle.js']).on('change', browserSync.reload)
-  gulp.watch(['vientos-pwa/src/**/*', 'vientos-pwa/config.json']).on('change', () => {
-    console.log('auto-bundling ;)')
-    return browserify({
-      entries: ['vientos-pwa/src/main.js'],
-      debug: true
-    }).transform(babelify.configure({
-      presets: ['es2015'],
-      plugins: ['transform-object-rest-spread']
-    })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-pwa/'))
-  })
 })
+
+function bundle () {
+  console.log('bundling pwa')
+  return browserify({
+    entries: ['vientos-pwa/src/main.js'],
+    debug: true
+  }).transform(babelify.configure({
+    presets: ['es2015'],
+    plugins: ['transform-object-rest-spread']
+  })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-pwa/'))
+}
+
+gulp.task('pwa:bundle', bundle)
+
+gulp.task('pwa:bundle:watch', () => {
+  gulp.watch(['vientos-pwa/src/**/*', 'vientos-pwa/config.json']).on('change', bundle)
+})
+
+gulp.task('pwa', ['pwa:browsersync', 'pwa:bundle', 'pwa:bundle:watch'])
 
 // stack
 gulp.task('stack', ['service', 'pwa'])
