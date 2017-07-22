@@ -1,6 +1,6 @@
 [submodule "vientos-service"]
 	path = vientos-service
 	url = https://github.com/vientos/vientos-service.git
-[submodule "vientos-pwa"]
-	path = vientos-pwa
-	url = https://github.com/vientos/vientos-pwa.git
+[submodule "vientos-app"]
+	path = vientos-app
+	url = https://github.com/vientos/vientos-app.git

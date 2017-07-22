@@ -1,26 +1,19 @@
 # vientos-sdk
 Development environment for vientos stack, it includes as submodules:
 
-* https://github.com/ehecame/vientos-pwa
-* https://github.com/ehecame/vientos-hapipalapi
+* https://github.com/vientos/vientos-app
+* https://github.com/vientos/vientos-service
 
 ## dependencies
-
 * npm *(see: https://github.com/creationix/nvm)*
+
+### optional
+* mongodb
+or
 * docker *(see: https://www.docker.com/products/overview#/install_the_platform)*
 * docker-compose *(see: https://www.docker.com/products/docker-compose)*
 
 ## usage
-
-```shell
-npm install
-```
-will install npm dependencies
-
-```shell
-docker-compose up -d
-```
-will start container with MongoDB in detached mode
 
 ```shell
 git submodule init && git submodule update
@@ -28,10 +21,22 @@ git submodule init && git submodule update
 will checkout service and PWA
 
 ```shell
+npm install
+```
+will install npm dependencies
+
+```shell
 cp env.example env
 # edit env if needed
 source ./env
 ```
+
+if you don't have MongoDB, you can use on in docker container
+```shell
+docker-compose up -d
+```
+will start container with MongoDB in detached mode
+
 
 ### vientos-service
 ```shell
@@ -47,17 +52,17 @@ gulp service
 
 #### git workflow
 
-1. fork https://github.com/ehecame/vientos-service
-2. checkout original master and set your fork as remote
+1. fork https://github.com/vientos/vientos-service on github
+2. set your fork as remote in vientos-service
 ```shell
 cd vientos-service
-git pull origin
-git checkout master
+git fetch origin
+git checkout staging
 git remote add myfork git@github.com:{MYUSERNAME}/vientos-sdk.git
 ```
-3. for each PR start from origin/master, make topic branch and push it to your fork
+3. for each PR start from origin/staging, make topic branch and push it to your fork
 ```shell
-git checkout master
+git checkout staging
 git pull origin
 git checkout -b myfeature
 # edit files and git add
@@ -65,20 +70,19 @@ git commit -m 'short description'
 git push myfork myfeature
 ```
 
-### vientos-pwa
+### vientos-app
 ```shell
-cd vientos-pwa
+cd vientos-app
 npm install
 bower install
 cp config.example.json config.json
 # edit env if needed
-npm run bundle
 cd .. # back to vientos-sdk
 ```
 
-to start dev server for vientos-pwa
+to start dev server for vientos-app
 ```shell
-gulp pwa
+gulp app
 ```
 
 #### git workflow
@@ -91,25 +95,10 @@ to start both dev servers
 gulp stack
 ```
 
-### database tasks
+## testing
 
-if you don't have global gulp
-```shell
-npm install -g gulp
-```
+### selenium
 
-to import fixtures
-```shell
-gulp import
-```
-
-to drop database
-
-```shell
-gulp db:drop
-```
-
-to see counts for collections in database
-```shell
-gulp db:stats
-```
+* http://webdriver.io/guide.html
+  * http://docs.seleniumhq.org/download/
+  * https://github.com/mozilla/geckodriver/releases

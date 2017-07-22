@@ -14,7 +14,7 @@ const handler = function (request, reply) {
       id: person._id,
       sessionId: cuid()
     })
-    reply().redirect(PWA_URL)
+    reply().redirect(PWA_URL + '/me')
   })
 }
 

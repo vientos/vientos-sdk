@@ -9,10 +9,8 @@ const cuid = require('cuid')
 const factory = require('factory-girl').factory
 const Chance = require('chance')
 const shuffle = require('lodash/shuffle')
-const fixtures = require('vientos-fixtures')
 const data = require('vientos-data')
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/vientos-dev'
-const MongoClient = require('mongodb').MongoClient
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 const MongooseAdapter = require('factory-girl').MongooseAdapter
@@ -30,40 +28,40 @@ gulp.task('service:restart', () => {
 
 gulp.task('service', ['service:start', 'service:restart'])
 
-// PWA
+// APP
 
-gulp.task('pwa:browsersync', () => {
+gulp.task('app:browsersync', () => {
   browserSync.init({
-    server: './vientos-pwa',
+    server: './vientos-app',
     middleware: [ historyApiFallback() ],
     port: 8080,
     open: false,
     notify: false
   })
-  gulp.watch(['vientos-pwa/app/**/*', 'vientos-pwa/bundle.js']).on('change', browserSync.reload)
+  gulp.watch(['vientos-app/app/**/*', 'vientos-app/index.html', 'vientos-app/bundle.js']).on('change', browserSync.reload)
 })
 
 function bundle () {
-  console.log('bundling pwa')
+  console.log('bundling app')
   return browserify({
-    entries: ['vientos-pwa/src/main.js'],
+    entries: ['vientos-app/src/main.js'],
     debug: true
   }).transform(babelify.configure({
     presets: ['es2015'],
     plugins: ['transform-object-rest-spread']
-  })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-pwa/'))
+  })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-app/'))
 }
 
-gulp.task('pwa:bundle', bundle)
+gulp.task('app:bundle', bundle)
 
-gulp.task('pwa:bundle:watch', () => {
-  gulp.watch(['vientos-pwa/src/**/*', 'vientos-pwa/config.json']).on('change', bundle)
+gulp.task('app:bundle:watch', () => {
+  gulp.watch(['vientos-app/src/**/*', 'vientos-app/config.json']).on('change', bundle)
 })
 
-gulp.task('pwa', ['pwa:browsersync', 'pwa:bundle', 'pwa:bundle:watch'])
+gulp.task('app', ['app:browsersync', 'app:bundle', 'app:bundle:watch'])
 
 // stack
-gulp.task('stack', ['service', 'pwa'])
+gulp.task('stack', ['service', 'app'])
 
 // factories
 
@@ -127,86 +125,3 @@ gulp.task('factory', (done) => {
       return done()
     }).catch(err => console.log(err))
 })
-
-// database
-
-function namespaceIds (collection) {
-  let prefix = process.env.OAUTH_CLIENT_DOMAIN + '/'
-  let path = collection + '/'
-  return fixtures[collection].map(doc => {
-    if (!doc._id) doc._id = cuid()
-    doc._id = prefix + path + doc._id
-    if (doc.admins) {
-      doc.admins = doc.admins.map(id => prefix + 'people/' + id)
-    }
-    if (doc.projects) {
-      doc.projects = doc.projects.map(id => prefix + 'projects/' + id)
-    }
-    return doc
-  })
-}
-
-gulp.task('import:people', (done) => {
-  MongoClient.connect(MONGO_URL, (err, db) => {
-    if (err) throw err
-    db.collection('people').insert(namespaceIds('people'))
-      .then(() => {
-        console.log('people imported')
-        db.close()
-        return done()
-      })
-  })
-})
-
-gulp.task('import:projects', (done) => {
-  MongoClient.connect(MONGO_URL, (err, db) => {
-    if (err) throw err
-    db.collection('projects').insert(namespaceIds('projects'))
-      .then(() => {
-        console.log('projects imported')
-        db.close()
-        return done()
-      })
-  })
-})
-
-gulp.task('import:intents', (done) => {
-  MongoClient.connect(MONGO_URL, (err, db) => {
-    if (err) throw err
-    db.collection('intents').insert(namespaceIds('intents'))
-      .then(() => {
-        console.log('intents imported')
-        db.close()
-        return done()
-      })
-  })
-})
-
-gulp.task('db:drop', (done) => {
-  MongoClient.connect(MONGO_URL, (err, db) => {
-    if (err) throw err
-    db.dropDatabase().then(() => {
-      console.log('database dropped')
-      db.close()
-      return done()
-    })
-  })
-})
-
-gulp.task('db:stats', (done) => {
-  MongoClient.connect(MONGO_URL, (err, db) => {
-    if (err) throw err
-    db.collection('people').count()
-      .then(count => console.log('people:', count))
-      .then(() => db.collection('projects').count())
-      .then(count => console.log('projects:', count))
-      .then(() => db.collection('intents').count())
-      .then(count => console.log('intents:', count))
-      .then(() => {
-        db.close()
-        return done()
-      })
-  })
-})
-
-gulp.task('import', ['import:people', 'import:projects', 'import:intents'])

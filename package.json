@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "description": "dev tools for vientos stack",
   "main": "index.js",
-  "scripts": {
-    "seed": "gulp seed",
-    "purge": "gulp db:drop"
-  },
   "author": "",
   "license": "Unlicense",
   "devDependencies": {
@@ -24,8 +20,7 @@
     "lodash": "^4.17.4",
     "mongodb": "^2.2.22",
     "mongoose": "^4.9.8",
-    "vientos-data": "https://github.com/vientos/vientos-data.git#0.0.1",
-    "vientos-fixtures": "https://github.com/vientos/vientos-fixtures.git#0.0.5",
+    "vientos-data": "https://github.com/vientos/vientos-data.git#0.1.1",
     "vinyl-source-stream": "^1.1.0"
   }
 }
