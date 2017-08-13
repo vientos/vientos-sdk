@@ -1,10 +1,8 @@
 const gulp = require('gulp')
 const server = require('gulp-develop-server')
 const browserSync = require('browser-sync').create()
+const webpack = require('webpack-stream')
 const historyApiFallback = require('connect-history-api-fallback')
-const browserify = require('browserify')
-const babelify = require('babelify')
-const source = require('vinyl-source-stream')
 const cuid = require('cuid')
 const factory = require('factory-girl').factory
 const Chance = require('chance')
@@ -43,19 +41,25 @@ gulp.task('app:browsersync', () => {
 
 function bundle () {
   console.log('bundling app')
-  return browserify({
-    entries: ['vientos-app/src/main.js'],
-    debug: true
-  }).transform(babelify.configure({
-    presets: ['es2015'],
-    plugins: ['transform-object-rest-spread']
-  })).bundle().pipe(source('bundle.js')).pipe(gulp.dest('vientos-app/'))
+  return gulp.src('src/entry.js')
+    .pipe(webpack({
+      entry: './vientos-app/src/main.js',
+      output: {
+        filename: 'bundle.js'
+      },
+      devtool: 'source-map'
+    }))
+    .pipe(gulp.dest('vientos-app/'))
 }
 
 gulp.task('app:bundle', bundle)
 
 gulp.task('app:bundle:watch', () => {
-  gulp.watch(['vientos-app/src/**/*', 'vientos-app/config.json']).on('change', bundle)
+  gulp.watch([
+    'vientos-app/src/**/*',
+    'vientos-app/config.json',
+    'vientos-app/node_modules/vientos-client/*'
+  ]).on('change', bundle)
 })
 
 gulp.task('app', ['app:browsersync', 'app:bundle', 'app:bundle:watch'])
